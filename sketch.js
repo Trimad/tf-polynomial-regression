@@ -2,14 +2,14 @@ let x_arr = [];
 let y_arr = [];
 
 let coefficient = [];
+let degree = 3;
 
 const learningRate = 0.1;
 const optimizer = tf.train.adam(learningRate);
 
-
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  initializeConstants(2);
+  initializeConstants(degree);
 }
 
 function initializeConstants(degree) {
@@ -19,29 +19,33 @@ function initializeConstants(degree) {
   }
 }
 
-function getYs(degreesLeft) {
-//this is where I left off
-
-}
-
 function loss(pred, labels) {
   return pred.sub(labels).square().mean();
 }
+
 function predict(x) {
   const xs = tf.tensor1d(x);
-  const ys = xs.pow(tf.scalar(2)).mul(coefficient[0])
-    .add(xs.mul(coefficient[1]))
-    .add(coefficient[2]);
-  /*
-  const ys = sx.pow(tf.scalar(3)).mul(a)
-    .add(xs.square().mul(b))
-    .add(xs.mul(c))
-    .add(d);
-*/
-
-  return ys;
-
+  if (degree === 0) {
+    const ys = xs.pow(tf.scalar(degree)).mul(coefficient[0]);
+    return ys;
+  } else if (degree === 1) {
+    const ys = xs.pow(tf.scalar(degree)).mul(coefficient[0])
+      .add(coefficient[1]);
+    return ys;
+  } else if (degree === 2) {
+    const ys = xs.pow(tf.scalar(degree)).mul(coefficient[0])
+    ys.add(xs.mul(coefficient[1]))
+      .add(coefficient[2]);
+    return ys;
+  } else if (degree === 3) {
+    const ys = xs.pow(tf.scalar(degree)).mul(coefficient[0])
+      .add(xs.square().mul(coefficient[1]))
+      .add(xs.mul(coefficient[2]))
+      .add(coefficient[3]);
+    return ys;
+  }
 }
+
 function mousePressed() {
   const x = map(mouseX, 0, width, -1, 1);
   const y = map(mouseY, 0, height, -1, 1);
@@ -59,8 +63,8 @@ function draw() {
     );
   }
 
-  stroke(255);
-  strokeWeight(8);
+  stroke(255, 0, 0);
+  strokeWeight(10);
 
   //Draw every point
   for (let i = 0; i < x_arr.length; i++) {
@@ -68,6 +72,8 @@ function draw() {
   }
 
   const curveX = [];
+
+  stroke(0, 0, 127);
 
   //The more points, the smoother the curve that is drawn/
   for (let x = -1; x <= 1.01; x += 0.05) {
@@ -93,7 +99,7 @@ function draw() {
 }
 
 function drawGraph() {
-  background(0);
+  background(255);
   for (var i = 0; i < height; i += 5) {
     stroke(51);
     point(width / 2, i);
